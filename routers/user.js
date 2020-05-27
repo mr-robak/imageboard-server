@@ -13,7 +13,7 @@ router.get("/", async (req, res, next) => {
   }
 });
 
-router.post("/", async (req, res, next) => {
+router.post("/signup", async (req, res, next) => {
   try {
     const { email, password, fullName } = req.body;
     if (!email || !password || !fullName) {
@@ -21,6 +21,7 @@ router.post("/", async (req, res, next) => {
         .status(400)
         .send("Please provide all parameters: email, password, fullName!");
     } else {
+      // Here, when handing down the password to the create method we hash it.
       const hashedPassword = bcrypt.hashSync(password, 10);
       const newUser = await User.create({
         email,
