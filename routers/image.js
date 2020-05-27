@@ -9,13 +9,41 @@ const Image = require("../models").image;
 
 const router = new Router();
 
-router.get("/images", async (req, res, next) => {
+router.get("/", async (req, res, next) => {
   try {
     const images = await Image.findAll();
-    console.log(images);
     res.send(images);
   } catch (error) {
     next(error);
+  }
+});
+
+router.get("/:id", async (req, res, next) => {
+  try {
+    const id = req.params.id;
+    const image = await Image.findByPk(id);
+    if (!image) {
+      res.status(400).send(`No image with an id=${id}`);
+    }
+    res.send(image);
+  } catch (error) {
+    next(error);
+  }
+});
+
+router.post("/", async (req, res, next) => {
+  try {
+    const { title, url } = req.body;
+    if (!title || title === " ") {
+      res.status(400).send("Please provide a title=");
+    } else if (!url || url === " ") {
+      res.status(400).send("Please provide an url=");
+    } else {
+      const image = await Image.create(req.body);
+      res.json(image);
+    }
+  } catch (e) {
+    next(e);
   }
 });
 
