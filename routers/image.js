@@ -9,13 +9,14 @@ const Image = require("../models").image;
 
 const router = new Router();
 
-router.get("/", async (req, res, next) => {
-  try {
-    const images = await Image.findAll();
-    res.send(images);
-  } catch (error) {
-    next(error);
-  }
+router.get("/", (req, res, next) => {
+  // Math.min() here sets the limit for results row, it is 25 if nothing provided, then user imput, but only when < 500, otherwise 500 is used
+  const limit = Math.min(req.query.limit || 25, 500);
+  const offset = req.query.offset || 0;
+
+  Image.findAndCountAll({ limit, offset })
+    .then((result) => res.send({ images: result.rows, total: result.count }))
+    .catch((error) => next(error));
 });
 
 router.get("/:id", async (req, res, next) => {
